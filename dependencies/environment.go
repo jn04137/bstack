@@ -1,8 +1,10 @@
 package dependencies
 
 import (
-	"log"
 	"database/sql"
+	"log"
+	"os"
+	"fmt"
 
 	_ "github.com/lib/pq"
 )
@@ -12,7 +14,14 @@ type Environment struct {
 }
 
 func CreateEnvironment() *Environment {
-	dbConn, err := sql.Open("postgres", "host=localhost port=5432 user=bstack_user password=password dbname=bstack_db sslmode=disable")
+	dbInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", 
+		os.Getenv("DB_HOST"), 
+		os.Getenv("DB_PORT"), 
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_NAME"),
+	) 
+	dbConn, err := sql.Open("postgres", dbInfo)
 	if err != nil {
 		log.Panicf("Error creating connection to database: %v", err)
 	}

@@ -38,14 +38,14 @@ func (repo UserRepository) GetUser(username string) (models.UserAccount, error) 
 
 func (repo UserRepository) GetAllUsers() ([]models.UserAccount, error) {
 	db := repo.dbConn
-	query := `SELECT username,nano_id from user_account`
+	query := `SELECT id,username,nano_id from user_account`
 
 	users := []models.UserAccount{}
 	rows, err := db.Query(query)
 
 	for rows.Next() {
 		var user models.UserAccount
-		if err := rows.Scan(&user.Username, &user.NanoId); err != nil {
+		if err := rows.Scan(&user.Id, &user.Username, &user.NanoId); err != nil {
 			return users, err
 		}
 		users = append(users, user)

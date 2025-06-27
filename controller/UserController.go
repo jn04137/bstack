@@ -26,7 +26,7 @@ func (controller UserController) GetRoute() *chi.Mux {
 	r.Get("/endpoint", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("This is the user endpoint"))
 	})
-	
+
 	r.Post("/signup", userHandler.UserSignup)
 	r.Post("/login", userHandler.UserSignin)
 	r.Get("/getAll", userHandler.GetAllUsers)
