@@ -7,6 +7,7 @@ import (
 
 	"com/bstack/dependencies"
 	"com/bstack/handlers"
+	"com/bstack/middlewares"
 )
 
 type UserController struct {
@@ -21,6 +22,8 @@ func NewUserController(env *dependencies.Environment) *UserController {
 
 func (controller UserController) GetRoute() *chi.Mux {
 	r := chi.NewRouter()
+	r.Use(middlewares.UserAuthMiddleware)
+
 	userHandler := controller.userHandler
 
 	r.Get("/endpoint", func(w http.ResponseWriter, r *http.Request) {
@@ -33,3 +36,4 @@ func (controller UserController) GetRoute() *chi.Mux {
 
 	return r
 }
+

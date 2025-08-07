@@ -35,13 +35,13 @@ func (handler UserHandler) UserSignup(w http.ResponseWriter, r *http.Request){
 	}
 	nanoId, err := gonanoid.New()
 	if err != nil {
-		log.Printf("Error generating nanoId: %v", err)
+
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	user.NanoId = nanoId
 
-	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 15)
+	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
 	if err != nil {
 		log.Printf("Error occurred while hashing password: %v", err)
 	}

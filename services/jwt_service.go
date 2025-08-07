@@ -1,9 +1,10 @@
 package services
 
 import (
-	"time"
-	"os"
 	"net/http"
+	"os"
+	"time"
+	"log"
 
 	"github.com/golang-jwt/jwt/v5"
 
@@ -43,6 +44,17 @@ func CreateJwtCookie(token string) http.Cookie {
 	}
 }
 
-func ValidateToken(token string) {
+func ValidateToken(tokenString string) (string, string, error) {
 
+	token, err := jwt.ParseWithClaims(tokenString, &CustomJwtClaims{}, func(*jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET")),nil
+	})
+	if err != nil {
+		log.Printf("Error reading token: %v", err.Error())
+		return "", "", err
+	} else if claims, ok := token.Claims.(*CustomJwtClaims); ok {
+		log.Printf("username: %s, nanoId: %s\n", claims.Username, claims.NanoId)
+		return claims.Username, claims.NanoId, err
+	}
+	return "", "", err
 }

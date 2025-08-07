@@ -4,6 +4,8 @@ import (
 	"log"
 	"context"
 	"net/http"
+
+	"com/bstack/services"
 )
 
 func UserAuthMiddleware(next http.Handler) http.Handler {
@@ -13,12 +15,19 @@ func UserAuthMiddleware(next http.Handler) http.Handler {
 		if err != nil {
 			log.Printf("Error getting cookie. Probably not logged in.")
 			next.ServeHTTP(w, r)
+			return
 		}
 
 		token := cookie.Value
-		ctx := context.WithValue(r.Context(), "userNanoId", token)
-		r.Context()
+		username, nanoId, err := services.ValidateToken(token)
+		if err != nil {
+			log.Printf("Error getting username and nanoid from user: %v", err.Error())
+			next.ServeHTTP(w, r)
+			return
+		}
+		ctx := context.WithValue(r.Context(), "username", username)
+		ctx = context.WithValue(r.Context(), "userNanoId", nanoId)
 
-		next.ServeHTTP(w, ctx)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
