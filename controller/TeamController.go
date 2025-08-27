@@ -3,7 +3,6 @@ package controller
 import (
 	"com/bstack/dependencies"
 	"com/bstack/handlers"
-	"com/bstack/middlewares"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -18,11 +17,14 @@ func NewTeamController(env *dependencies.Environment) *TeamController {
 	}
 }
 
-func (controller TeamController) GetRoute() {
+func (controller TeamController) GetRoute() *chi.Mux {
 	r := chi.NewRouter()
-	r.Use(middlewares.UserAuthMiddleware)
-
 	handler := controller.teamHandler
+	r.Get("/allTeams", handler.GetAllTeams)
 
-	r.Post("/createTeam", handler.CreateTeam)
+	protectedRoutes := chi.NewRouter()
+	protectedRoutes.Get("/createTeam", handler.CreateTeam)
+
+	r.Mount("/protected", protectedRoutes)
+	return r
 }

@@ -29,7 +29,9 @@ func main() {
 	})
 
 	userController := controller.NewUserController(env)
+	teamController := controller.NewTeamController(env)
 	r.Mount("/user", userController.GetRoute())
+	r.Mount("/team", teamController.GetRoute())
 
 	http.ListenAndServe(":8080", r)
 }

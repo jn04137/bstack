@@ -31,3 +31,8 @@ make create-migration name=<migration_name>
 ```bash
 make migrate-up
 ```
+
+## Using Makefile migrate force
+```bash
+make migrate-force VERSION=<version_number>
+```
