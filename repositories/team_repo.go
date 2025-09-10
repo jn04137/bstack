@@ -28,7 +28,7 @@ func (repo TeamRepository) CreateTeam(teamName string, ownerNanoId string) (erro
 func (repo TeamRepository) GetAllTeams() ([]models.Team, error) {
 	db := repo.dbConn
 
-	query := `SELECT team.id,team_name,details,user_account.nano_id from team INNER JOIN user_account
+	query := `SELECT team.id,team_name,details,user_account.nano_id,team.nano_id from team INNER JOIN user_account
 		ON team.owner=user_account.id`
 
 	rows, err := db.Query(query)
@@ -40,7 +40,7 @@ func (repo TeamRepository) GetAllTeams() ([]models.Team, error) {
 	var teams []models.Team
 	for rows.Next() {
 		var team models.Team
-		if err := rows.Scan(&team.Id, &team.TeamName, &team.Details, &team.OwnerNanoId); err != nil {
+		if err := rows.Scan(&team.Id, &team.TeamName, &team.Details, &team.OwnerNanoId, &team.TeamNanoId); err != nil {
 			return nil, err
 		}
 		teams = append(teams, team)
