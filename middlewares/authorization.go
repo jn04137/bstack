@@ -26,7 +26,7 @@ func UserAuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 		ctx := context.WithValue(r.Context(), "username", username)
-		ctx = context.WithValue(r.Context(), "userNanoId", nanoId)
+		ctx = context.WithValue(ctx, "userNanoId", nanoId)
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})

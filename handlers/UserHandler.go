@@ -98,6 +98,24 @@ func (handler UserHandler) UserSignin(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+func (handler UserHandler) UserSessionInfo(w http.ResponseWriter, r *http.Request) {
+	payLoad := make(map[string]string)
+
+	username := r.Context().Value("username")
+	nanoId := r.Context().Value("userNanoId")
+	if username == nil || nanoId == nil {
+		return
+	}
+	
+	payLoad["username"] = username.(string)
+	payLoad["userNanoId"] = nanoId.(string)
+	err := json.NewEncoder(w).Encode(payLoad)
+	if err != nil {
+		log.Printf("Error encoding map into json: %v", err)
+		return
+	}
+}
+
 func (handler UserHandler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	userRepo := handler.userRepo
 
@@ -116,5 +134,4 @@ func (handler UserHandler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 }
-
 

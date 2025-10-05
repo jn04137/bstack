@@ -41,6 +41,8 @@ func CreateJwtCookie(token string) http.Cookie {
 		Value: token,
 		Expires: time.Now().Add(24 * 7 * time.Hour),
 		HttpOnly: true,
+		SameSite: http.SameSiteDefaultMode,
+		Path: "/",
 	}
 }
 

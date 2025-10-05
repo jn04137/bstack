@@ -22,7 +22,6 @@ func NewUserController(env *dependencies.Environment) *UserController {
 
 func (controller UserController) GetRoute() *chi.Mux {
 	r := chi.NewRouter()
-	r.Use(middlewares.UserAuthMiddleware)
 
 	userHandler := controller.userHandler
 
@@ -34,6 +33,11 @@ func (controller UserController) GetRoute() *chi.Mux {
 	r.Post("/login", userHandler.UserSignin)
 	r.Get("/getAll", userHandler.GetAllUsers)
 
+	protectedRoutes := chi.NewRouter()
+	protectedRoutes.Use(middlewares.UserAuthMiddleware)
+	protectedRoutes.Get("/userSession", userHandler.UserSessionInfo)
+
+	r.Mount("/protected", protectedRoutes)
 	return r
 }
 
