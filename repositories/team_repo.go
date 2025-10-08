@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"log"
 	"database/sql"
 
 	"com/bstack/dependencies"
@@ -107,18 +108,27 @@ func (repo TeamRepository) GetESEADivision(teamId int) (string, error) {
 		return eseaDivision, err
 }
 
-// func (repo TeamRepository) GetESEADivisions() ([]string, error) {
-	// db := repo.dbConn
-	// query := `SELECT id,division FROM team_esea_division`
+func (repo TeamRepository) GetESEADivisions() ([]string, error) {
+	db := repo.dbConn
+	query := `SELECT id,division FROM team_esea_division`
 
-	// var eseaDivisions []string
-	// rows, err := db.Query(query)
-	//if err != nil {
-	//	return eseaDivisions, err
-	//}
+	var eseaDivisions []string
+	rows, err := db.Query(query)
+	if err != nil {
+		log.Printf("This is the error: %v", err)
+		return eseaDivisions, err
+	}
+	for rows.Next() {
+		var division string
+		if err := rows.Scan(&division); err != nil {
+			log.Printf("This is the error: %v", err)
+			return eseaDivisions, err
+		}
+		eseaDivisions = append(eseaDivisions, division)
+	}
 
-	//return eseaDivisions, err
-// }
+	return eseaDivisions, err
+}
 
 func (repo TeamRepository) GetPlayersOnTeam(teamNanoId string) {
 

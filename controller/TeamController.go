@@ -22,6 +22,7 @@ func (controller TeamController) GetRoute() *chi.Mux {
 	handler := controller.teamHandler
 	r.Get("/allTeams", handler.GetAllTeams)
 	r.Get("/{teamNanoId}", handler.TeamPageData)
+	r.Get("/teamDivisionList", handler.GetESEATeamDivisionList)
 
 	protectedRoutes := chi.NewRouter()
 	protectedRoutes.Get("/createTeam", handler.CreateTeam)

@@ -109,4 +109,16 @@ func (handler TeamHandler) TeamPageData(w http.ResponseWriter, r *http.Request) 
 	w.WriteHeader(http.StatusOK)
 }
 
+func (handler TeamHandler) GetESEATeamDivisionList(w http.ResponseWriter, r *http.Request) {
+	db := handler.teamRepo
+
+	divisions, err := db.GetESEADivisions()
+	if err != nil {
+		log.Printf("Failed to get divisions: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	json.NewEncoder(w).Encode(divisions)
+	w.Header().Set("Content-Type", "application/json")
+}
 
