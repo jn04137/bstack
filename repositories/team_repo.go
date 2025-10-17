@@ -1,8 +1,9 @@
 package repositories
 
 import (
-	"log"
+	"context"
 	"database/sql"
+	"log"
 
 	"com/bstack/dependencies"
 	"com/bstack/models"
@@ -84,7 +85,7 @@ func (repo TeamRepository) GetTeamESEADivision() string {
 func (repo TeamRepository) SetESEADivision(teamNanoId string, eseaDivision string) error {
 	db := repo.dbConn
 
-	query := `INSERT INTO (division_id,team_id) VALUES ($1, $2)`
+	query := `INSERT INTO division_of_team (division_id,team_id) VALUES ($1, $2)`
 
 	_, err := db.Exec(query, teamNanoId, eseaDivision)
 	return err
@@ -108,20 +109,19 @@ func (repo TeamRepository) GetESEADivision(teamId int) (string, error) {
 		return eseaDivision, err
 }
 
-func (repo TeamRepository) GetESEADivisions() ([]string, error) {
+func (repo TeamRepository) GetESEADivisions() ([]models.TeamESEADivision, error) {
 	db := repo.dbConn
 	query := `SELECT id,division FROM team_esea_division`
 
-	var eseaDivisions []string
+	var eseaDivisions []models.TeamESEADivision
 	rows, err := db.Query(query)
 	if err != nil {
-		log.Printf("This is the error: %v", err)
 		return eseaDivisions, err
 	}
 	for rows.Next() {
-		var division string
-		if err := rows.Scan(&division); err != nil {
-			log.Printf("This is the error: %v", err)
+		var division models.TeamESEADivision
+		if err := rows.Scan(&division.Id, &division.ESEADivision); err != nil {
+			log.Printf("Error getting ESEA Divisions: %v", err)
 			return eseaDivisions, err
 		}
 		eseaDivisions = append(eseaDivisions, division)
@@ -132,5 +132,33 @@ func (repo TeamRepository) GetESEADivisions() ([]string, error) {
 
 func (repo TeamRepository) GetPlayersOnTeam(teamNanoId string) {
 
+}
+
+// Bookmark
+func (repo TeamRepository) UpdateTeam(teamNanoId string, teamName string, eseaDivision int, teamDesc string) error {
+	var txContext context.Context
+
+	db := repo.dbConn
+
+	// Begin transaction of insert queries
+	// All queries will run in sequence and whole sequence will fail if is bad
+	tx, err := db.BeginTx(txContext, &sql.TxOptions{Isolation: sql.LevelSerializable})
+	if err != nil {
+		return err
+	}
+	teamDetailsQuery := `UPDATE team SET team_name=$1, team_desc=$2  WHERE team.nano_id=$2`
+	eseaDivisionUpdate := `INSERT INTO 
+			division_of_team (division_id) VALUES ($1)
+		ON CONFLICT ($2) DO UPDATE SET 
+			division_id=$1`
+
+	tx.Exec(teamDetailsQuery);
+	tx.Exec(eseaDivisionUpdate);
+
+	// Commit transaction to database
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+	return err
 }
 

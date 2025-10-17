@@ -8,4 +8,5 @@ type Team struct {
 	OwnerNanoId string `json:"ownerNanoId,omitempty"`
 	Details     string `json:"teamDetails,omitempty"`
 	OwnerName 	string `json:"ownerUsername,omitempty"`
+	TeamDivision TeamESEADivision `json:"teamDivision"`
 }

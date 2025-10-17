@@ -42,6 +42,19 @@ func (handler TeamHandler) CreateTeam(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+func (handler TeamHandler) UpdateTeam(w http.ResponseWriter, r *http.Request) {
+	// db := handler.teamRepo
+
+	var req map[string]any
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		log.Printf("Error decoding the body: %v", err.Error())
+	}
+
+	log.Print("request coming in: %v", req)
+
+}
+
 func (handler TeamHandler) GetAllTeams(w http.ResponseWriter, r *http.Request) {
 	db := handler.teamRepo
 	teams, err := db.GetAllTeams()
@@ -73,10 +86,6 @@ func (handler TeamHandler) GetTeam(w http.ResponseWriter, r *http.Request) {
 	//}
 
 	//db := handler.teamRepo
-}
-
-func (handler TeamHandler) EditTeam(w http.ResponseWriter, r *http.Request) {
-
 }
 
 func (handler TeamHandler) JoinTeam(w http.ResponseWriter, r *http.Request) {
